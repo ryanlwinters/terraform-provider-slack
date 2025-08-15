@@ -36,5 +36,5 @@ release:
     name: terraform-provider-slack
   prerelease: auto
 changelog:
-  skip: true
+  disable: true
 
