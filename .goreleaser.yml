@@ -1,3 +1,50 @@
+project_name: terraform-provider-slack
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: provider
+    main: ./main.go
+    binary: terraform-provider-slack
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w -X github.com/ryanlwinters/terraform-provider-slack/provider.Version={{.Version}}
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - id: archive
+    builds:
+      - provider
+    format: zip
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_{{- if eq .Os "darwin" -}}darwin{{- else -}}{{ .Os }}{{- end -}}_{{ .Arch }}
+    files:
+      - LICENSE
+      - README.md
+
+checksum:
+  name_template: "checksums.txt"
+
+signs:
+  - cmd: gpg
+    args: ["--batch", "--pinentry-mode", "loopback", "--passphrase", "{{ .Env.GPG_PASSPHRASE }}", "--detach-sign", "--armor", "--output", "${signature}", "${artifact}"]
+    artifacts: checksum
+
+release:
+  draft: false
+  prerelease: false
+  github:
+    owner: ryanlwinters
+    name: terraform-provider-slack
+
 version: 2
 project_name: terraform-provider-slack
 builds:
