@@ -31,12 +31,24 @@ archives:
       - README.md
 
 checksum:
-  name_template: "checksums.txt"
+  name_template: "{{ .ProjectName }}_{{ .Version }}_SHA256SUMS"
 
 signs:
   - cmd: gpg
-    args: ["--batch", "--pinentry-mode", "loopback", "--passphrase", "{{ .Env.GPG_PASSPHRASE }}", "--detach-sign", "--armor", "--output", "${signature}", "${artifact}"]
     artifacts: checksum
+    signature: "${artifact}.sig"
+    args:
+      - --batch
+      - --local-user
+      - "{{ .Env.GPG_FINGERPRINT }}"
+      - --pinentry-mode
+      - loopback
+      - --passphrase
+      - "{{ .Env.GPG_PASSPHRASE }}"
+      - --output
+      - "${signature}"
+      - --detach-sign
+      - "${artifact}"
 
 release:
   draft: false
