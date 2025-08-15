@@ -20,18 +20,24 @@ jobs:
           go-version: '1.23'
 
       - name: Import GPG key
-        if: ${{ secrets.GPG_PRIVATE_KEY != '' }}
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
-          echo "GPG keys imported"
+          if [ -n "$GPG_PRIVATE_KEY" ]; then
+            echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+            echo "GPG keys imported"
+          else
+            echo "No GPG key provided; skipping import"
+          fi
 
       - name: Set GPG fingerprint
-        if: ${{ secrets.GPG_PRIVATE_KEY != '' }}
         run: |
-          echo "GPG_FINGERPRINT=$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr:/ {print $10; exit}')" >> $GITHUB_ENV
+          if gpg --list-secret-keys --with-colons | grep -q '^fpr:'; then
+            echo "GPG_FINGERPRINT=$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr:/ {print $10; exit}')" >> $GITHUB_ENV
+          else
+            echo "No GPG fingerprint found; skipping"
+          fi
 
       - name: Run Goreleaser
         uses: goreleaser/goreleaser-action@v6
