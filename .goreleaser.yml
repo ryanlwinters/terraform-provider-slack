@@ -15,8 +15,21 @@ archives:
 checksum:
   name_template: "{{ .ProjectName }}_{{ .Version }}_SHA256SUMS"
 signs:
-  - cmd: cosign
-    args: ["sign-blob", "--output", "${artifact}.sig", "${artifact}"]
+  - artifacts: checksum
+    signature: "${artifact}.sig"
+    cmd: gpg
+    args:
+      - --batch
+      - --local-user
+      - "{{ .Env.GPG_FINGERPRINT }}"
+      - --pinentry-mode
+      - loopback
+      - --passphrase
+      - "{{ .Env.GPG_PASSPHRASE }}"
+      - --output
+      - "${signature}"
+      - --detach-sign
+      - "${artifact}"
 release:
   github:
     owner: ryanlwinters

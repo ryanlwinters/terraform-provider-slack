@@ -66,3 +66,15 @@ resource "slack_default_channels" "default" {
 ## License
 
 Apache-2.0
+
+## Publishing to Terraform Registry
+
+1. Generate a GPG key (if you want to sign checksums yourself) and add it to repo secrets as `GPG_PRIVATE_KEY` and `GPG_PASSPHRASE`.
+2. Tag a release:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+3. GitHub Actions will build and attach release artifacts. Once the release is live, publish the provider on the Terraform Registry under `ryanlwinters/slack`.
