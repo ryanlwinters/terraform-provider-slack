@@ -1,3 +1,4 @@
+version: 2
 project_name: terraform-provider-slack
 
 before:
@@ -56,4 +57,5 @@ release:
   github:
     owner: ryanlwinters
     name: terraform-provider-slack
+  replace_existing_artifacts: true
 
