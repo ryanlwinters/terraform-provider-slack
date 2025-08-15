@@ -34,11 +34,7 @@ release:
   github:
     owner: ryanlwinters
     name: terraform-provider-slack
+  prerelease: auto
 changelog:
   skip: true
-release:
-  github:
-    owner: ryanlwinters
-    name: terraform-provider-slack
-  prerelease: auto
 
